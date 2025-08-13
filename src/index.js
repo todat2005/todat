@@ -1,29 +1,19 @@
 const express = require("express");
-const exphbs = require("express-handlebars");
+const { engine } = require("express-handlebars");
 const morgan = require("morgan");
 const path = require("path");
-const fs = require("fs");
-
-const app = express();
 const port = 5500;
 
-app.engine("handlebars", exphbs());
-
-const html_path = path.join(__dirname, "index.html");
-let html_content = undefined;
-
+const app = express();
+// template engine
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views",path.join(__dirname,"resources/views"));
+// logger
 app.use(morgan("combined"));
-
-fs.readFile(html_path, "utf8", (err, data) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  html_content = data;
-});
-
-app.get("/", (req, res) => {
-  res.send(html_content || "<h1>Loading...</h1>");
+app.use(express.static(path.join(__dirname, 'public')));
+app.get("/dang-nhap", (req, res) => {
+  res.render("login");
 });
 
 app.listen(port, () => {
